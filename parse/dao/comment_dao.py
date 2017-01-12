@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util.connection import *
+from parse.util.connection import *
 
 
 class BlogDao():

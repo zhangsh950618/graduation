@@ -71,7 +71,7 @@ class WeiboForSomethingSpider(CrawlSpider):
         keyword = response.meta['keyword']
         # self.logger.info(keyword)
         for blog in blogs:
-            self.logger.info(blog.prettify())
+            # self.logger.info(blog.prettify())
 
             # 微博的id
             # 如果是转发的微博会产生一个新的blog_id
@@ -146,7 +146,7 @@ class WeiboForSomethingSpider(CrawlSpider):
             comment_a = blog.find('a', text = re.compile(u'^评论\[\d+\]$'))
             # self.logger.info(comment_a)
             comment = int(find_number.search(comment_a.get_text()).group())
-            self.logger.info("评论数量为：{0}".format(comment))
+            # self.logger.info("评论数量为：{0}".format(comment))
             if comment != 0:
                 # self.logger.info(comment_a)
                 comment_url = comment_a['href']
@@ -161,13 +161,13 @@ class WeiboForSomethingSpider(CrawlSpider):
             forward_a = blog.find('a', text = re.compile(u'^转发\[\d+\]$'))
             forward = int(find_number.search(forward_a.get_text()).group())
             # self.logger.info(forward_a)
-            self.logger.info("转发数量为：{0}".format(forward))
+            # self.logger.info("转发数量为：{0}".format(forward))
 
             # “点赞”
             blog_thumbup_a = blog.find('a', text = re.compile(u'^赞\[\d+\]$'))
             # self.logger.info(blog_thumbup_a)
             blog_thumbup = int(find_number.search(blog_thumbup_a.get_text()).group())
-            self.logger.info("点赞数量为：{0}".format(blog_thumbup))
+            # self.logger.info("点赞数量为：{0}".format(blog_thumbup))
 
             blog_item = BlogItem(
                 # 博文id应该是唯一的

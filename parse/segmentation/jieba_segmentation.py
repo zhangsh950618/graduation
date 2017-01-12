@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from dao.blog_dao import *
+from parse.dao.blog_dao import *
 
 
 class JiebaSeg():
