@@ -21,4 +21,12 @@ if a_re.match(a):
 print re.match(u'今天', u'今天 10:01')
 
 
+# unicode测试
+f = u""
+L = [u"你好",u"北京",u"天安门"]
+for l in L:
+    f += l
+print f
+
+
 
