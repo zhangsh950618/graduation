@@ -52,14 +52,15 @@ class WeiboForSomethingSpider(CrawlSpider):
     def start_requests(self):
         self.logger.info('start crawl for something ...')
         # keywords = self.settings.get("CRAWLED_WEIBO_KEYWORDS_LIST")
-        keyword = u"美国大选"
-        keyword_url = 'http://weibo.cn/search/mblog?hideSearchFrame=&keyword=%E7%BE%8E%E5%9B%BD%E5%A4%A7%E9%80%89&page=1&vt=4'
-        # self.logger.info(keyword_url)
-        yield scrapy.Request(
-            url=keyword_url,
-            meta={'keyword': keyword},
-            callback=self.parse_keyword
-        )
+        keywords = [u"央视春节联欢晚会",u"美国大选", ]
+        for keyword in keywords:
+            keyword_url = u'http://weibo.cn/search/mblog?hideSearchFrame=&keyword={0}&page=1&vt=4'.format(keyword)
+            self.logger.info(keyword)
+            yield scrapy.Request(
+                url=keyword_url,
+                meta={'keyword': keyword},
+                callback=self.parse_keyword
+            )
 
     def parse_keyword(self, response):
         self.logger.info('parsekeyword..')
