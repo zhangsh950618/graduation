@@ -12,23 +12,24 @@ from numpy import array
 class JiebaSeg():
     def __init__(self):
         pass
-
-    def get_segmention_for_blog(self, blog):
+    # 基于textrank算法的分词，并且返回权重
+    def get_segmention_for_blog(self, blog_info):
         # 开启jieba分词
         jieba.enable_parallel()
-        return jieba.cut(blog)
+        return jieba.analyse.textrank(blog_info,topK=10000,withWeight=True)
 
-    def get_segmention_for_all_blogs(self):
+    def get_segmention_for_all_blogs(self,keyword):
         jieba.analyse.set_stop_words("/home/zsh/PycharmProjects/graduation/dict/stop_words.txt")
         blog_dao = BlogDao()
-        blogs = blog_dao.search_all_blogs()
+        blogs = blog_dao.search_all_blogs(keyword)
         full_blog_info = u""
         for blog in blogs:
             blog_info = blog[4]
-            # full_blog_info += blog_info
-            print blog_info
-            segs = jieba.analyse.textrank(blog_info,topK=1000)
-            print "/".join(segs)
+            full_blog_info += blog_info
+            # print blog_info
+            segs = jieba.analyse.textrank(blog_info,topK=10000,withWeight=True)
+            # print "/".join(segs)
+            return segs
 
     def get_top_keywords(self):
         jieba.analyse.set_stop_words("/home/zsh/PycharmProjects/graduation/dict/stop_words.txt")
@@ -90,4 +91,32 @@ class JiebaSeg():
         ga.cluster(vectors=data)
         for i in range(len(hot_blogs)):
             print "分类结果:",ga.classify(data[i])," 原文：",hot_blogs[i][4]
+
+    # 筛选出热度高于hot_point的bolg，返回hot_blogs
+    def get_hot_blogs(self,keyword,hot_point):
+        hot_blogs = []
+        blog_dao = BlogDao()
+        blogs =blog_dao.search_all_blogs(keyword)
+        for blog in blogs:
+            # 转发量
+            forward = blog[5]
+            # 评论量
+            comment = blog[6]
+            # 点赞量
+            blog_thumbup = blog[7]
+
+            # 用欧氏距离表示热度
+            val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
+            if val > hot_point:
+                hot_blogs.append(blog)
+
+        return hot_blogs
+
+
+
+
+
+
+        return hot_blogs
+
 

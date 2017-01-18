@@ -7,7 +7,7 @@ class BlogDao():
     def __init__(self):
         pass
 
-    def search_all_blogs(self):
+    def search_all_blogs(self,keyword):
         # 首先获取到数据库的链接类
         connection = Connetion()
         # 获取到链接
@@ -16,7 +16,8 @@ class BlogDao():
         # 使用cursor()方法获取操作游标
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT * from blog order BY post_time")
+            print "SELECT * from blog WHERE keyword = '{0}' order BY post_time".format(keyword)
+            cursor.execute("SELECT * from blog WHERE keyword = '{0}' order BY post_time".format(keyword))
 
             conn.commit()
         except:
@@ -28,7 +29,7 @@ class BlogDao():
         return cursor.fetchall()
 
     # 查找一列
-    def search_col_blogs(self, col_name):
+    def search_col_blogs(self, col_name, keyword):
         # 首先获取到数据库的链接类
         connection = Connetion()
         # 获取到链接
@@ -37,7 +38,7 @@ class BlogDao():
         # 使用cursor()方法获取操作游标
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT {0} from blog".format(col_name))
+            cursor.execute("SELECT {0} from blog WHERE keyword = {1}".format(col_name,keyword)),
 
             conn.commit()
         except:
@@ -54,7 +55,7 @@ class BlogDao():
         return res
 
     # 查找多列
-    def search_cols_blogs(self, cols_name):
+    def search_cols_blogs(self, cols_name,keyword):
         # 首先获取到数据库的链接类
         connection = Connetion()
         # 获取到链接
@@ -63,7 +64,7 @@ class BlogDao():
         # 使用cursor()方法获取操作游标
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT {0} from blog".format(",".join(cols_name)))
+            cursor.execute("SELECT {0} from blog where keyword = {1}".format(",".join(cols_name),keyword))
 
             conn.commit()
         except:
