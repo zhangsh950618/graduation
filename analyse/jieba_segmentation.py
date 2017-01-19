@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import sys
+
 sys.path.append('/home/zsh/PycharmProjects/graduation')
 from dao.blog_dao import *
 import jieba
 from nltk.probability import FreqDist
 import jieba.analyse
-import  math
+import math
 import nltk
 from numpy import array
+
+
 class JiebaSeg():
     def __init__(self):
         pass
+
     # 基于textrank算法的分词，并且返回权重
     def get_segmention_for_blog(self, blog_info):
         # 开启jieba分词
         jieba.enable_parallel()
-        return jieba.analyse.textrank(blog_info,topK=10000,withWeight=True)
+        return jieba.analyse.textrank(blog_info, topK=10000, withWeight=True)
 
-    def get_segmention_for_all_blogs(self,keyword):
+    def get_segmention_for_all_blogs(self, keyword):
         jieba.analyse.set_stop_words("/home/zsh/PycharmProjects/graduation/dict/stop_words.txt")
         blog_dao = BlogDao()
         blogs = blog_dao.search_all_blogs(keyword)
@@ -27,7 +31,7 @@ class JiebaSeg():
             blog_info = blog[4]
             full_blog_info += blog_info
             # print blog_info
-            segs = jieba.analyse.textrank(blog_info,topK=10000,withWeight=True)
+            segs = jieba.analyse.textrank(blog_info, topK=10000, withWeight=True, )
             # print "/".join(segs)
             return segs
 
@@ -54,7 +58,7 @@ class JiebaSeg():
                 dims = []
                 datas = []
                 v = []
-                for dim,data in segs:
+                for dim, data in segs:
                     dimens.add(dim)
 
         for blog in blogs:
@@ -72,7 +76,7 @@ class JiebaSeg():
                 dims = []
                 datas = []
                 v = []
-                for dim,data in segs:
+                for dim, data in segs:
                     dims.append(dim)
                     datas.append(data)
                 for dimen in dimens:
@@ -83,20 +87,18 @@ class JiebaSeg():
 
                 vectors.append(v)
 
-
-
         data = [array(v) for v in vectors]
         # print data
-        ga = nltk.cluster.gaac.GAAClusterer(num_clusters = 5, normalise = True)
+        ga = nltk.cluster.gaac.GAAClusterer(num_clusters=5, normalise=True)
         ga.cluster(vectors=data)
         for i in range(len(hot_blogs)):
-            print "分类结果:",ga.classify(data[i])," 原文：",hot_blogs[i][4]
+            print "分类结果:", ga.classify(data[i]), " 原文：", hot_blogs[i][4]
 
     # 筛选出热度高于hot_point的bolg，返回hot_blogs
-    def get_hot_blogs(self,keyword,hot_point):
+    def get_hot_blogs(self, keyword, hot_point):
         hot_blogs = []
         blog_dao = BlogDao()
-        blogs =blog_dao.search_all_blogs(keyword)
+        blogs = blog_dao.search_all_blogs(keyword)
         for blog in blogs:
             # 转发量
             forward = blog[5]
@@ -111,12 +113,3 @@ class JiebaSeg():
                 hot_blogs.append(blog)
 
         return hot_blogs
-
-
-
-
-
-
-        return hot_blogs
-
-

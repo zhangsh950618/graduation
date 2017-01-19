@@ -52,7 +52,7 @@ class WeiboForSomethingSpider(CrawlSpider):
     def start_requests(self):
         self.logger.info('start crawl for something ...')
         # keywords = self.settings.get("CRAWLED_WEIBO_KEYWORDS_LIST")
-        keywords = [u"央视春节联欢晚会",u"美国大选", ]
+        keywords = [u"央视春节联欢晚会", u"美国大选", u"特朗普", u"希拉里", u"奥巴马", u"普京"]
         for keyword in keywords:
             keyword_url = u'http://weibo.cn/search/mblog?hideSearchFrame=&keyword={0}&page=1&vt=4'.format(keyword)
             self.logger.info(keyword)
@@ -144,7 +144,7 @@ class WeiboForSomethingSpider(CrawlSpider):
 
             # “评论”
 
-            comment_a = blog.find('a', text = re.compile(u'^评论\[\d+\]$'))
+            comment_a = blog.find('a', text=re.compile(u'^评论\[\d+\]$'))
             # self.logger.info(comment_a)
             comment = int(find_number.search(comment_a.get_text()).group())
             # self.logger.info("评论数量为：{0}".format(comment))
@@ -159,13 +159,13 @@ class WeiboForSomethingSpider(CrawlSpider):
                 )
 
             # “转发”
-            forward_a = blog.find('a', text = re.compile(u'^转发\[\d+\]$'))
+            forward_a = blog.find('a', text=re.compile(u'^转发\[\d+\]$'))
             forward = int(find_number.search(forward_a.get_text()).group())
             # self.logger.info(forward_a)
             # self.logger.info("转发数量为：{0}".format(forward))
 
             # “点赞”
-            blog_thumbup_a = blog.find('a', text = re.compile(u'^赞\[\d+\]$'))
+            blog_thumbup_a = blog.find('a', text=re.compile(u'^赞\[\d+\]$'))
             # self.logger.info(blog_thumbup_a)
             blog_thumbup = int(find_number.search(blog_thumbup_a.get_text()).group())
             # self.logger.info("点赞数量为：{0}".format(blog_thumbup))

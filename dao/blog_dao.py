@@ -16,7 +16,7 @@ class BlogDao():
         # 使用cursor()方法获取操作游标
         cursor = conn.cursor()
         try:
-            print "SELECT * from blog WHERE keyword = '{0}' order BY post_time".format(keyword)
+            # print "SELECT * from blog WHERE keyword = '{0}' order BY post_time".format(keyword)
             cursor.execute("SELECT * from blog WHERE keyword = '{0}' order BY post_time".format(keyword))
 
             conn.commit()

@@ -36,7 +36,7 @@ def normalize(segs):
 def gaac(keyword):
     jieba_seg = JiebaSeg()
     # 筛选热度高于100的节点作为热点
-    hot_blogs = jieba_seg.get_hot_blogs(keyword, 50)
+    hot_blogs = jieba_seg.get_hot_blogs(keyword, 65)
 
     # 首先获取所有的单词维度
     # dimens = get_dimens(hot_blogs)
@@ -70,7 +70,7 @@ def gaac(keyword):
                     v = i
                     t = j
         print max_similarity
-        if max_similarity < 0.4:
+        if max_similarity < 0.5:
             flag = True
         # 将hot_blog_entities中 index 为v和t的合并
         else:
@@ -82,10 +82,11 @@ def gaac(keyword):
     #聚类结束
     i = 0
     for entity in hot_blog_entities:
-        print i
-        i += 1
-        for blog in entity:
-            print blog.get_blog_info()
+        if len(entity) > 2:
+            print i
+            i += 1
+            for blog in entity:
+                print blog.get_blog_info()
 
 
 def get_distance(v1,v2):
@@ -108,6 +109,9 @@ def get_similarity(blog_entity1, blog_entity2):
     dot_products.sort()
     length = len(dot_products)
     return dot_products[length / 2]
+
+    # 使用平均值，貌似还是中位数比较靠谱
+    # return sum(dot_products)/len(dot_products)
 
 
 def merge(blog_entities, v, t):
