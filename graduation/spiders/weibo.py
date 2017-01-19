@@ -52,7 +52,7 @@ class WeiboForSomethingSpider(CrawlSpider):
     def start_requests(self):
         self.logger.info('start crawl for something ...')
         # keywords = self.settings.get("CRAWLED_WEIBO_KEYWORDS_LIST")
-        keywords = [u"央视春节联欢晚会", u"美国大选", u"特朗普", u"希拉里", u"奥巴马", u"普京"]
+        keywords = [u"央视春节联欢晚会", u"美国大选", u"特朗普", u"希拉里", u"奥巴马", u"普京", u"川普"]
         for keyword in keywords:
             keyword_url = u'http://weibo.cn/search/mblog?hideSearchFrame=&keyword={0}&page=1&vt=4'.format(keyword)
             self.logger.info(keyword)
