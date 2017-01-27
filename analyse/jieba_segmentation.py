@@ -31,7 +31,7 @@ class JiebaSeg():
             blog_info = blog[4]
             full_blog_info += blog_info
             # print blog_info
-            segs = jieba.analyse.textrank(blog_info, topK=10000, withWeight=True, )
+            segs = jieba.analyse.textrank(blog_info, topK=10000, withWeight=True, span=3)
             # print "/".join(segs)
             return segs
 

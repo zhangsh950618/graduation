@@ -24,13 +24,12 @@ def get_dimens(blogs):
 # 对于稀疏向量做泛化处理
 def normalize(segs):
     sum = 0
-    for seg,weight in segs:
+    for seg, weight in segs:
         sum += weight ** 2
     norm = math.sqrt(sum)
     for i in range(len(segs)):
         segs[i] = list(segs[i])
         segs[i][1] /= norm
-
 
 
 def gaac(keyword):
@@ -48,6 +47,11 @@ def gaac(keyword):
     for hot_blog in hot_blogs:
         # get_vector 方法将所有的segmentions返回的是元组转换成向量，词组如果存在就是weight不存在就是0
         segs = jieba_seg.get_segmention_for_blog(hot_blog[4])
+        segmentions = ""
+        for seg, weight in segs:
+            segmentions += "," + seg
+        print segmentions
+
         normalize(segs)
         hot_blog_entities.append(
             [BlogEntity(segs, hot_blog)])
@@ -77,9 +81,7 @@ def gaac(keyword):
             merge(hot_blog_entities, v, t)
             tot_entities -= 1
 
-
-
-    #聚类结束
+    # 聚类结束
     i = 0
     for entity in hot_blog_entities:
         if len(entity) > 2:
@@ -89,10 +91,10 @@ def gaac(keyword):
                 print blog.get_blog_info()
 
 
-def get_distance(v1,v2):
+def get_distance(v1, v2):
     sum = 0
-    for seg1,weight1 in v1:
-        for seg2,weight2 in v2:
+    for seg1, weight1 in v1:
+        for seg2, weight2 in v2:
             if seg1 == seg2:
                 sum += weight1 * weight2
     return sum
@@ -104,7 +106,7 @@ def get_similarity(blog_entity1, blog_entity2):
         for e2 in blog_entity2:
             v1 = e1.get_vector()
             v2 = e2.get_vector()
-            dot_products.append(get_distance(v1,v2))
+            dot_products.append(get_distance(v1, v2))
     # 返回的是中位数，也可以尝试平均数
     dot_products.sort()
     length = len(dot_products)
