@@ -14,9 +14,8 @@ BOT_NAME = 'graduation'
 SPIDER_MODULES = ['graduation.spiders']
 NEWSPIDER_MODULE = 'graduation.spiders'
 
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'graduation (+http://www.yourdomain.com)'
+# USER_AGENT = 'graduation (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 # ROBOTSTXT_OBEY = True
@@ -27,17 +26,17 @@ CONCURRENT_REQUESTS = 5
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY =10
+DOWNLOAD_DELAY = 10
 # The download delay setting will honor only one of:
 DOWNLOAD_TIMEOUT = 300
 CONCURRENT_REQUESTS_PER_DOMAIN = 5
-#CONCURRENT_REQUESTS_PER_IP = 16
+# CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+# COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+# TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
@@ -47,30 +46,30 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
+# SPIDER_MIDDLEWARES = {
 #    'graduation.middlewares.GraduationSpiderMiddleware': 543,
-#}
+# }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
+# DOWNLOADER_MIDDLEWARES = {
 #    'graduation.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+# }
 DOWNLOADER_MIDDLEWARES = {
     'graduation.middlewares.CookiesMiddleware': 401,
     'graduation.middlewares.UserAgentsMiddleware': 402
 }
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
+# EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+# }
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'graduation.pipelines.GraduationPipeline': 300,
+    'graduation.pipelines.GraduationPipeline': 300,
 }
 # LOG_LEVEL = 'INFO'
 DEPTH_PRIORITY = 1
@@ -92,11 +91,11 @@ AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+# HTTPCACHE_ENABLED = True
+# HTTPCACHE_EXPIRATION_SECS = 0
+# HTTPCACHE_DIR = 'httpcache'
+# HTTPCACHE_IGNORE_HTTP_CODES = []
+# HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 # Your whole weibo username and password pairs.
 #                          ('18931456418', 'aced7yjc'),
 #                          ('18894797498', 'hvjfhivc2'),
@@ -110,4 +109,4 @@ AUTOTHROTTLE_DEBUG = False
 #                          ('18775745594', 'a1dotreu'),
 #                          ('15994624147', 'rg1chibt'),
 #                          ('15994647049', '4ykspmle'),
-WEIBO_LOGIN_INFO_LIST = [('18897669674', 'prjrkam1'),]
+WEIBO_LOGIN_INFO_LIST = [('18897669674', 'prjrkam1'), ]

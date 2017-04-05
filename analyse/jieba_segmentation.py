@@ -19,7 +19,7 @@ class JiebaSeg():
     # 基于textrank算法的分词，并且返回权重
     def get_segmention_for_blog(self, blog_info):
         # 开启jieba分词
-        jieba.enable_parallel()
+        # jieba.enable_parallel()
         return jieba.analyse.textrank(blog_info, topK=10000, withWeight=True)
 
     def get_segmention_for_all_blogs(self, keyword):
@@ -97,19 +97,70 @@ class JiebaSeg():
     # 筛选出热度高于hot_point的bolg，返回hot_blogs
     def get_hot_blogs(self, keyword, hot_point):
         hot_blogs = []
+        cold_blogs = []
         blog_dao = BlogDao()
         blogs = blog_dao.search_all_blogs(keyword)
-        for blog in blogs:
-            # 转发量
-            forward = blog[5]
-            # 评论量
-            comment = blog[6]
-            # 点赞量
-            blog_thumbup = blog[7]
 
-            # 用欧氏距离表示热度
-            val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
-            if val > hot_point:
-                hot_blogs.append(blog)
+        #如果指定了hot_point按照hot_point进行计算
+        if hot_point != 0:
+            for blog in blogs:
+                # 转发量
+                forward = blog[5]
+                # 评论量
+                comment = blog[6]
+                # 点赞量
+                blog_thumbup = blog[7]
 
+                # 用欧氏距离表示热度
+                val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
+                if val > hot_point:
+                    hot_blogs.append(blog)
+
+        #如果没有指定，那么按照k-means聚类
+        else:
+            max_index = 0
+            forward = blogs[0][5]
+            comment = blogs[0][6]
+            blog_thumbup = blogs[0][7]
+            max_hot_point = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
+            for index, blog in enumerate(blogs):
+                # 转发量
+                forward = blog[5]
+                # 评论量
+                comment = blog[6]
+                # 点赞量
+                blog_thumbup = blog[7]
+
+                # 用欧氏距离表示热度
+                val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
+                if val > max_hot_point:
+                    max_hot_point = val
+                    max_index = index
+
+                if val == 0:
+                    cold_blogs.append(blog)
+            hot_blogs.append(blogs[max_index])
+            blogs.pop(max_index)
+
+            # k-means for hot blogs
+            for blog in blogs:
+                # 转发量
+                forward = blog[5]
+                # 评论量
+                comment = blog[6]
+                # 点赞量
+                blog_thumbup = blog[7]
+
+                # 用欧氏距离表示热度
+                val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
+                # 如果热度不是0
+                if val != 0:
+                    dis_to_hotblogs = get_distance()
+                    dis_to_coldblogs = get_distance()
+
+
+
+
+
+        print "total hot blogs :", len(hot_blogs)
         return hot_blogs

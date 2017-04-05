@@ -6,7 +6,6 @@ import math
 from matplotlib import pyplot
 
 
-
 # 绘制数据的分布图形
 def plot_data_scatter():
     # 数据准备
@@ -18,7 +17,8 @@ def plot_data_scatter():
     cols = blog_dao.search_all_blogs()
     cols = list(cols)
     cols.sort(
-        lambda x, y: cmp(math.sqrt(x[5] ** 2 + x[6] ** 2 + x[7] ** 2), math.sqrt(y[5] ** 2 + y[6] ** 2 + y[7] ** 2)),reverse=True)
+        lambda x, y: cmp(math.sqrt(x[5] ** 2 + x[6] ** 2 + x[7] ** 2), math.sqrt(y[5] ** 2 + y[6] ** 2 + y[7] ** 2)),
+        reverse=True)
     for col in cols:
         print math.sqrt(col[5] ** 2 + col[6] ** 2 + col[7] ** 2), col[4]
     fre = []
@@ -36,9 +36,8 @@ def plot_data_scatter():
     pyplot.title('Lenth Of Fake Urls')
     pyplot.show()
 
-
-        # if val > 100:
-        #     print col[2], val, col[4]
+    # if val > 100:
+    #     print col[2], val, col[4]
     print fre
     ax = plt.figure().add_subplot(111, projection='3d')
     # 基于ax变量绘制三维图

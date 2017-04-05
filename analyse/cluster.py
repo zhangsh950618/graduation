@@ -4,6 +4,8 @@ import math
 from jieba_segmentation import JiebaSeg
 import numpy as np
 from entity.blog_entity import *
+from dao.blog_dao import *
+import sys
 
 
 def get_dimens(blogs):
@@ -32,10 +34,10 @@ def normalize(segs):
         segs[i][1] /= norm
 
 
-def gaac(keyword):
+def gaac_for_hotblogs(keyword, hot, min_similarity):
     jieba_seg = JiebaSeg()
     # 筛选热度高于100的节点作为热点
-    hot_blogs = jieba_seg.get_hot_blogs(keyword, 65)
+    hot_blogs = jieba_seg.get_hot_blogs(keyword, hot)
 
     # 首先获取所有的单词维度
     # dimens = get_dimens(hot_blogs)
@@ -47,10 +49,10 @@ def gaac(keyword):
     for hot_blog in hot_blogs:
         # get_vector 方法将所有的segmentions返回的是元组转换成向量，词组如果存在就是weight不存在就是0
         segs = jieba_seg.get_segmention_for_blog(hot_blog[4])
-        segmentions = ""
-        for seg, weight in segs:
-            segmentions += "," + seg
-        print segmentions
+        #     segmentions = ""
+        #     for seg, weight in segs:
+        #         segmentions += "," + seg
+        #     print segmentions
 
         normalize(segs)
         hot_blog_entities.append(
@@ -62,6 +64,7 @@ def gaac(keyword):
     while flag is not True:
         # 总的实体的个数
         tot_entities = len(hot_blog_entities)
+        print tot_entities
         # 寻找最近的两类合并
         v = 0
         t = 0
@@ -74,12 +77,11 @@ def gaac(keyword):
                     v = i
                     t = j
         print max_similarity
-        if max_similarity < 0.5:
+        if max_similarity < min_similarity:
             flag = True
         # 将hot_blog_entities中 index 为v和t的合并
         else:
             merge(hot_blog_entities, v, t)
-            tot_entities -= 1
 
     # 聚类结束
     i = 0
@@ -89,6 +91,8 @@ def gaac(keyword):
             i += 1
             for blog in entity:
                 print blog.get_blog_info()
+
+    return hot_blog_entities
 
 
 def get_distance(v1, v2):
@@ -101,6 +105,7 @@ def get_distance(v1, v2):
 
 
 def get_similarity(blog_entity1, blog_entity2):
+    # print  blog_entity1
     dot_products = []
     for e1 in blog_entity1:
         for e2 in blog_entity2:
@@ -119,3 +124,69 @@ def get_similarity(blog_entity1, blog_entity2):
 def merge(blog_entities, v, t):
     blog_entities[v].extend(blog_entities[t])
     blog_entities.pop(t)
+
+
+def k_means_for_allblogs(hot_blog_entities, keyword, min_similarity):
+    blog_dao = BlogDao()
+    blogs = blog_dao.search_all_blogs(keyword)
+    jieba_seg = JiebaSeg()
+    blog_entities = []
+    for blog in blogs:
+        segs = jieba_seg.get_segmention_for_blog(blog[4])
+        # normalize
+        normalize(segs)
+        blog_entities.append(
+            BlogEntity(segs, blog))
+
+    tot_blogs = len(blog_entities)
+    tot_entities = len(hot_blog_entities)
+    for i in range(tot_blogs):
+        print "the", i, "blog"
+        max_similarity = 0
+        t = 0
+        for j in range(tot_entities):
+            # temp_list = []
+            # temp_list.append()
+            similarity = get_similarity([blog_entities[i]], hot_blog_entities[j])
+            if similarity > max_similarity:
+                max_similarity = similarity
+                t = j
+
+        if max_similarity > min_similarity:
+            hot_blog_entities[t].append(blog_entities[i])
+    return hot_blog_entities
+
+
+def get_classfied_blogs(keyword, hot, min_similarity, min_quantity):
+    f_name = str(keyword[0]) + "_" + str(hot) + "_" + str(min_similarity) + "_" + str(min_quantity) + ".txt"
+    f = open(f_name, 'w')
+    hot_blog_entities = gaac_for_hotblogs(keyword, hot, min_similarity)
+    print "after gaac:", len(hot_blog_entities)
+    f.write("层次聚类结果: 一共 " + str(len(hot_blog_entities)) + "\n")
+    i = 1
+    for hot_blog_entity in hot_blog_entities:
+        f.write("" + str(i) + "\n")
+
+    classified_blogs = k_means_for_allblogs(hot_blog_entities, keyword, min_similarity)
+    print "after classified_blogs:", len(classified_blogs)
+
+    tot_entities = len(classified_blogs)
+
+    f.write("一共聚出:" + str(tot_entities) + "\n")
+    l = 0
+    for i in range(tot_entities):
+        if len(classified_blogs[i]) > min_quantity:
+            f.write(str(i) + '\n')
+            l += 1
+    f.write("核心类:" + str(l) + "\n")
+
+    for i in range(tot_entities):
+        if len(classified_blogs[i]) > min_quantity:
+            f.write(str(i) + '\n')
+            for blog in hot_blog_entities[i]:
+                # print blog.get_blog_info()
+                f.write(str(blog.get_blog_info()) + '\n')
+
+    f.close()
+
+    return classified_blogs, hot_blog_entities

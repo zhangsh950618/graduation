@@ -5,7 +5,6 @@ import requests, base64, re, json, time, binascii, rsa
 import urllib
 
 
-
 class Cookies(object):
     def __init__(self, raw_username, raw_password):
         self.raw_username = raw_username
@@ -49,7 +48,8 @@ class Cookies(object):
         # 创建公钥。
         key = rsa.PublicKey(int(self.pre_login_data[2], 16), 65537)
         # 先对 message 加密，然后将结果的每一个字节转换为一个十六进制数。
-        message = ('\t'.join([str(self.pre_login_data[0]), self.pre_login_data[1]]) + '\n' + self.raw_password).encode('utf-8')
+        message = ('\t'.join([str(self.pre_login_data[0]), self.pre_login_data[1]]) + '\n' + self.raw_password).encode(
+            'utf-8')
         # print(message)
 
         self.password = binascii.b2a_hex(rsa.encrypt(message, key))
@@ -83,7 +83,7 @@ class Cookies(object):
         }
         # proxies = {'http': 'socks4://117.69.66.210:6668'}
         session = requests.Session()
-        res = session.post(url = url, data = login_data,)
+        res = session.post(url=url, data=login_data, )
         # print(res.text)
 
         info = json.loads(res.content.decode('utf-8'))

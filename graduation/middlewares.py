@@ -56,6 +56,8 @@ class GraduationSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
 class CookiesMiddleware(object):
     def __init__(self, weibo_login_info_list):
         self.cookie_list = []
@@ -66,11 +68,12 @@ class CookiesMiddleware(object):
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-            weibo_login_info_list = crawler.settings.get('WEIBO_LOGIN_INFO_LIST')
+            weibo_login_info_list=crawler.settings.get('WEIBO_LOGIN_INFO_LIST')
         )
 
     def process_request(self, request, spider):
         request.cookies = random.choice(self.cookie_list)
+
 
 class UserAgentsMiddleware(object):
     def __init__(self):

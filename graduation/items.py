@@ -38,4 +38,3 @@ class CommentItem(scrapy.Item):
     comment_thumbup = scrapy.Field()
     # 评论的时间
     comment_time = scrapy.Field()
-
