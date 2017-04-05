@@ -137,9 +137,9 @@ def k_means_for_allblogs(hot_blog_entities, keyword, min_similarity):
         normalize(segs)
         blog_entities.append(
             BlogEntity(segs, blog))
-
+    classified_blog_entities = hot_blog_entities
     tot_blogs = len(blog_entities)
-    tot_entities = len(hot_blog_entities)
+    tot_entities = len(classified_blog_entities)
     for i in range(tot_blogs):
         print "the", i, "blog"
         max_similarity = 0
@@ -147,25 +147,24 @@ def k_means_for_allblogs(hot_blog_entities, keyword, min_similarity):
         for j in range(tot_entities):
             # temp_list = []
             # temp_list.append()
-            similarity = get_similarity([blog_entities[i]], hot_blog_entities[j])
+            similarity = get_similarity([blog_entities[i]], classified_blog_entities[j])
             if similarity > max_similarity:
                 max_similarity = similarity
                 t = j
 
         if max_similarity > min_similarity:
-            hot_blog_entities[t].append(blog_entities[i])
-    return hot_blog_entities
+            classified_blog_entities[t].append(blog_entities[i])
+    return classified_blog_entities
 
 
 def get_classfied_blogs(keyword, hot, min_similarity, min_quantity):
     f_name = str(keyword[0]) + "_" + str(hot) + "_" + str(min_similarity) + "_" + str(min_quantity) + ".txt"
     f = open(f_name, 'w')
+
+    # 对高热度blog进行层次聚类
     hot_blog_entities = gaac_for_hotblogs(keyword, hot, min_similarity)
     print "after gaac:", len(hot_blog_entities)
     f.write("层次聚类结果: 一共 " + str(len(hot_blog_entities)) + "\n")
-    i = 1
-    for hot_blog_entity in hot_blog_entities:
-        f.write("" + str(i) + "\n")
 
     classified_blogs = k_means_for_allblogs(hot_blog_entities, keyword, min_similarity)
     print "after classified_blogs:", len(classified_blogs)

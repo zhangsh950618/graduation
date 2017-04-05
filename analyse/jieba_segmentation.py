@@ -35,6 +35,8 @@ class JiebaSeg():
             # print "/".join(segs)
             return segs
 
+
+
     def get_top_keywords(self):
         jieba.analyse.set_stop_words("/home/zsh/PycharmProjects/graduation/dict/stop_words.txt")
         blog_dao = BlogDao()
@@ -101,8 +103,9 @@ class JiebaSeg():
         blog_dao = BlogDao()
         blogs = blog_dao.search_all_blogs(keyword)
 
-        #如果指定了hot_point按照hot_point进行计算
+        # 如果指定了hot_point按照hot_point进行计算
         if hot_point != 0:
+            print "使用hot_point参数聚类"
             for blog in blogs:
                 # 转发量
                 forward = blog[5]
@@ -116,8 +119,9 @@ class JiebaSeg():
                 if val > hot_point:
                     hot_blogs.append(blog)
 
-        #如果没有指定，那么按照k-means聚类
+        # 如果没有指定，那么按照k-means聚类
         else:
+            print "使用k-means自动聚类"
             max_index = 0
             forward = blogs[0][5]
             comment = blogs[0][6]
@@ -140,7 +144,7 @@ class JiebaSeg():
                 if val == 0:
                     cold_blogs.append(blog)
             hot_blogs.append(blogs[max_index])
-            blogs.pop(max_index)
+            # blogs.pop(max_index)
 
             # k-means for hot blogs
             for blog in blogs:
@@ -155,12 +159,25 @@ class JiebaSeg():
                 val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
                 # 如果热度不是0
                 if val != 0:
-                    dis_to_hotblogs = get_distance()
-                    dis_to_coldblogs = get_distance()
-
-
-
-
-
+                    dis_to_hotblogs = self.get_dis(blog, hot_blogs)
+                    dis_to_coldblogs =self.get_dis(blog, cold_blogs)
+                    if dis_to_hotblogs > dis_to_coldblogs:
+                        hot_blogs.append(blog)
+                    else:
+                        cold_blogs.append(blog)
         print "total hot blogs :", len(hot_blogs)
         return hot_blogs
+
+    def get_dis(self, blog, blogs):
+        distances = []
+        x0 = blog[5]
+        y0 = blog[6]
+        z0 = blog[7]
+        for b in blogs:
+            x1 = b[5]
+            y1 = b[6]
+            z1 = b[7]
+            val = math.sqrt((x0 - x1) ** 2 + (y0 - y1) ** 2 + (z0 - z1) ** 2)
+            distances.append(val)
+        distances.sort()
+        return distances[len(distances) / 2]
