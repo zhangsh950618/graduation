@@ -39,6 +39,8 @@ def gaac_for_hotblogs(keyword, hot, min_similarity):
     # 筛选热度高于100的节点作为热点
     hot_blogs = jieba_seg.get_hot_blogs(keyword, hot)
 
+    print "一共获取到hotblogs(热点博客)", len(hot_blogs), "条"
+
     # 首先获取所有的单词维度
     # dimens = get_dimens(hot_blogs)
     # print dimens
@@ -64,7 +66,7 @@ def gaac_for_hotblogs(keyword, hot, min_similarity):
     while flag is not True:
         # 总的实体的个数
         tot_entities = len(hot_blog_entities)
-        print tot_entities
+        print "当前一共" + str(tot_entities) + "类"
         # 寻找最近的两类合并
         v = 0
         t = 0
@@ -76,7 +78,6 @@ def gaac_for_hotblogs(keyword, hot, min_similarity):
                     max_similarity = similarity
                     v = i
                     t = j
-        print max_similarity
         if max_similarity < min_similarity:
             flag = True
         # 将hot_blog_entities中 index 为v和t的合并
@@ -84,13 +85,13 @@ def gaac_for_hotblogs(keyword, hot, min_similarity):
             merge(hot_blog_entities, v, t)
 
     # 聚类结束
-    i = 0
-    for entity in hot_blog_entities:
-        if len(entity) > 2:
-            print i
-            i += 1
-            for blog in entity:
-                print blog.get_blog_info()
+    # i = 0
+    # for entity in hot_blog_entities:
+    #     if len(entity) > 2:
+    #         # print i
+    #         i += 1
+    #         for blog in entity:
+    #             print blog.get_blog_info()
 
     return hot_blog_entities
 
@@ -127,6 +128,7 @@ def merge(blog_entities, v, t):
 
 
 def k_means_for_allblogs(hot_blog_entities, keyword, min_similarity):
+    # pass
     blog_dao = BlogDao()
     blogs = blog_dao.search_all_blogs(keyword)
     jieba_seg = JiebaSeg()
@@ -137,55 +139,63 @@ def k_means_for_allblogs(hot_blog_entities, keyword, min_similarity):
         normalize(segs)
         blog_entities.append(
             BlogEntity(segs, blog))
-    classified_blog_entities = hot_blog_entities
+    all_blog_entities = [[hot_blog for hot_blog in hot_blog_entity] for hot_blog_entity in hot_blog_entities]
     tot_blogs = len(blog_entities)
-    tot_entities = len(classified_blog_entities)
+    tot_entities = len(all_blog_entities)
     for i in range(tot_blogs):
+        # if i % 10 == 0:
         print "the", i, "blog"
         max_similarity = 0
         t = 0
         for j in range(tot_entities):
             # temp_list = []
             # temp_list.append()
-            similarity = get_similarity([blog_entities[i]], classified_blog_entities[j])
+            similarity = get_similarity([blog_entities[i]], all_blog_entities[j])
             if similarity > max_similarity:
                 max_similarity = similarity
                 t = j
 
         if max_similarity > min_similarity:
-            classified_blog_entities[t].append(blog_entities[i])
-    return classified_blog_entities
+            all_blog_entities[t].append(blog_entities[i])
+    return all_blog_entities
 
 
-def get_classfied_blogs(keyword, hot, min_similarity, min_quantity):
-    f_name = str(keyword[0]) + "_" + str(hot) + "_" + str(min_similarity) + "_" + str(min_quantity) + ".txt"
+def get_classfied_blogs(keywords, hot, min_similarity, min_quantity):
+    blog_dao = BlogDao()
+    blogs = blog_dao.search_all_blogs(keywords)
+    s = ""
+    for keyword in keywords:
+        s += keyword
+    f_name = s + "_" + str(hot) + "_" + str(min_similarity) + "_" + str(min_quantity) + ".txt"
     f = open(f_name, 'w')
-
+    f.write("一共有" + str(len(blogs)) + "博客\n")
+    print "一共有" + str(len(blogs)) + "博客"
+    f.write("关键词为：")
+    for keyword in keywords:
+        f.write(keyword)
+    f.write("最低热点为：" + str(hot) + "\n")
+    f.write("最低相似度为：" + str(min_similarity) + "\n")
+    f.write("最小类大小为：" + str(min_quantity) + "\n")
     # 对高热度blog进行层次聚类
-    hot_blog_entities = gaac_for_hotblogs(keyword, hot, min_similarity)
-    print "after gaac:", len(hot_blog_entities)
-    f.write("层次聚类结果: 一共 " + str(len(hot_blog_entities)) + "\n")
+    print "正在对热点博客进行聚类"
+    hot_blog_entities = gaac_for_hotblogs(keywords, hot, min_similarity)
+    f.write("对于热点博客进行层次聚类结果: 一共 " + str(len(hot_blog_entities)) + "类\n")
+    # for index, hot_blog_entity in enumerate(hot_blog_entities):
+    #     f.write("第" + str(index) + "类, " + "大小为" + str(len(hot_blog_entity)) + "\n")
 
-    classified_blogs = k_means_for_allblogs(hot_blog_entities, keyword, min_similarity)
-    print "after classified_blogs:", len(classified_blogs)
-
-    tot_entities = len(classified_blogs)
-
-    f.write("一共聚出:" + str(tot_entities) + "\n")
-    l = 0
-    for i in range(tot_entities):
-        if len(classified_blogs[i]) > min_quantity:
-            f.write(str(i) + '\n')
-            l += 1
-    f.write("核心类:" + str(l) + "\n")
-
-    for i in range(tot_entities):
-        if len(classified_blogs[i]) > min_quantity:
-            f.write(str(i) + '\n')
-            for blog in hot_blog_entities[i]:
-                # print blog.get_blog_info()
-                f.write(str(blog.get_blog_info()) + '\n')
-
+    # 对所有博客进行层次聚类
+    print "正在对所有博客k-means聚类"
+    # print "k-means聚类前第56类大小：",len(hot_blog_entities[69])
+    all_blog_entities = k_means_for_allblogs(hot_blog_entities, keywords, min_similarity)
+    # print "k-means聚类后第56类大小：",len(hot_blog_entities[69])
+    f.write("对于所有博客进行k-means聚类结果: 一共 " + str(len(all_blog_entities)) + "类\n")
+    # for index, all_blog_entity in enumerate(all_blog_entities):
+    #     f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "\n")
+    for index, all_blog_entity in enumerate(all_blog_entities):
+        if len(all_blog_entity) > min_quantity:
+            f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "被定义为核心类,其热点博客为\n")
+            for hot_blog in hot_blog_entities[index]:
+                f.write(hot_blog.get_blog_info() + "\n")
     f.close()
 
-    return classified_blogs, hot_blog_entities
+    return all_blog_entities, hot_blog_entities

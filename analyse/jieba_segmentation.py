@@ -10,7 +10,7 @@ import jieba.analyse
 import math
 import nltk
 from numpy import array
-
+import re
 
 class JiebaSeg():
     def __init__(self):
@@ -19,7 +19,12 @@ class JiebaSeg():
     # 基于textrank算法的分词，并且返回权重
     def get_segmention_for_blog(self, blog_info):
         # 开启jieba分词
-        # jieba.enable_parallel()
+        # jieba.enable_parallel(4)
+        # print type(blog_info)
+        blog_info = blog_info.encode('utf-8')
+        # 处理掉@和表情以及发布了头条文章
+        blog_info = re.sub('(@\S*\s|\[.*\]|#.*#|发布了头条文章|抱歉，此微博已被作者删除。查看帮助 | 秒拍视频)', "", blog_info).decode('utf-8')
+        # print blog_info
         return jieba.analyse.textrank(blog_info, topK=10000, withWeight=True)
 
     def get_segmention_for_all_blogs(self, keyword):
@@ -165,7 +170,7 @@ class JiebaSeg():
                         hot_blogs.append(blog)
                     else:
                         cold_blogs.append(blog)
-        print "total hot blogs :", len(hot_blogs)
+        print "一共找到热点博客:", len(hot_blogs), "条"
         return hot_blogs
 
     def get_dis(self, blog, blogs):
