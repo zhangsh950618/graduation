@@ -107,6 +107,7 @@ AUTOTHROTTLE_DEBUG = False
 #                          ('18775743545', 'ieyijad2'),
 #                          ('18897669714', '1prxuvjma'),
 #                          ('18775745594', 'a1dotreu'),
-#                          ('15994624147', 'rg1chibt'),
+#
+#
 #                          ('15994647049', '4ykspmle'),
-WEIBO_LOGIN_INFO_LIST = [('18897669674', 'prjrkam1'), ]
+WEIBO_LOGIN_INFO_LIST = [('nbri2405817469@163.com', '7sv6k0'), ]
