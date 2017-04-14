@@ -8,5 +8,5 @@ class Connetion():
         pass
 
     def get_connetction(self):
-        return MySQLdb.connect(host="118.193.90.142", user="root", passwd="123", db="graduation",
+        return MySQLdb.connect(host="localhost", user="root", passwd="123", db="graduation",
                                use_unicode=True, charset="utf8")

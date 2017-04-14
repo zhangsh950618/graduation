@@ -37,7 +37,7 @@ def normalize(segs):
 def gaac_for_hotblogs(keyword, hot, min_similarity):
     jieba_seg = JiebaSeg()
     # 筛选热度高于100的节点作为热点
-    hot_blogs = jieba_seg.get_hot_blogs(keyword, hot)
+    hot_blogs, cold_blogs = jieba_seg.get_hot_blogs(keyword, hot)
 
     print "一共获取到hotblogs(热点博客)", len(hot_blogs), "条"
 
@@ -154,10 +154,20 @@ def k_means_for_allblogs(hot_blog_entities, keyword, min_similarity):
             if similarity > max_similarity:
                 max_similarity = similarity
                 t = j
-
+        print "最大相似度为 ： ", max_similarity
+        if max_similarity == 0:
+            print blogs[i][4]
         if max_similarity > min_similarity:
             all_blog_entities[t].append(blog_entities[i])
     return all_blog_entities
+
+
+def get_earlist_post_time(blog_entities):
+    earliest_post_time = blog_entities[0].get_post_time()
+    for blog_entity in blog_entities:
+        earliest_post_time = min(earliest_post_time, blog_entity.get_post_time())
+
+    return earliest_post_time
 
 
 def get_classfied_blogs(keywords, hot, min_similarity, min_quantity):
@@ -191,11 +201,21 @@ def get_classfied_blogs(keywords, hot, min_similarity, min_quantity):
     f.write("对于所有博客进行k-means聚类结果: 一共 " + str(len(all_blog_entities)) + "类\n")
     # for index, all_blog_entity in enumerate(all_blog_entities):
     #     f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "\n")
-    for index, all_blog_entity in enumerate(all_blog_entities):
-        if len(all_blog_entity) > min_quantity:
-            f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "被定义为核心类,其热点博客为\n")
-            for hot_blog in hot_blog_entities[index]:
-                f.write(hot_blog.get_blog_info() + "\n")
-    f.close()
+    # for index, all_blog_entity in enumerate(all_blog_entities):
+    #     f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "\n")
+    #     if len(all_blog_entity) > min_quantity:
+    #         f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "被定义为核心类,其热点博客为\n")
+    #         for hot_blog in hot_blog_entities[index]:
+    #             f.write(hot_blog.get_blog_info() + "\n")
 
-    return all_blog_entities, hot_blog_entities
+    all_blog_entities.sort(key=lambda obj: len(obj), reverse=True)
+    all_blog_entities = all_blog_entities[:min_quantity]
+    for index, all_blog_entity in enumerate(all_blog_entities):
+        f.write("第" + str(index) + "类, " + "大小为" + str(len(all_blog_entity)) + "\n")
+        for blog in all_blog_entities[index]:
+            f.write(blog.get_blog_info() + "\n")
+    f.close()
+    # #
+    # all_blog_entities.sort(key=get_earlist_post_time, reverse=False)
+
+    return all_blog_entities

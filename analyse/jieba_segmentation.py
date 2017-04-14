@@ -23,7 +23,7 @@ class JiebaSeg():
         # print type(blog_info)
         blog_info = blog_info.encode('utf-8')
         # 处理掉@和表情以及发布了头条文章
-        blog_info = re.sub('(@\S*\s|\[.*\]|#.*#|发布了头条文章|抱歉，此微博已被作者删除。查看帮助 | 秒拍视频)', "", blog_info).decode('utf-8')
+        blog_info = re.sub('(@\S*\s|\[.*\]|#.*#|发布了头条文章|发表了头条文章|抱歉，此微博已被作者删除。查看帮助|秒拍视频)', "", blog_info).decode('utf-8')
         # print blog_info
         return jieba.analyse.textrank(blog_info, topK=10000, withWeight=True)
 
@@ -123,6 +123,8 @@ class JiebaSeg():
                 val = math.sqrt(forward ** 2 + comment ** 2 + blog_thumbup ** 2)
                 if val > hot_point:
                     hot_blogs.append(blog)
+                else:
+                    cold_blogs.append(blog)
 
         # 如果没有指定，那么按照k-means聚类
         else:
@@ -171,7 +173,7 @@ class JiebaSeg():
                     else:
                         cold_blogs.append(blog)
         print "一共找到热点博客:", len(hot_blogs), "条"
-        return hot_blogs
+        return hot_blogs, cold_blogs
 
     def get_dis(self, blog, blogs):
         distances = []
@@ -185,4 +187,4 @@ class JiebaSeg():
             val = math.sqrt((x0 - x1) ** 2 + (y0 - y1) ** 2 + (z0 - z1) ** 2)
             distances.append(val)
         distances.sort()
-        return distances[len(distances) / 2]
+        return sum(distances)/len(distances)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from graduation.items import BlogItem
-
+import math
 
 # 微博实体类
 class BlogEntity():
@@ -10,10 +10,10 @@ class BlogEntity():
         self.blog_id = blog[0]
         # 所搜索微博文章的关键字
         self.keyword = blog[1]
-        # 博文的作者
-        self.author = blog[2]
         # 博文发布的时间
-        self.post_time = blog[3]
+        self.post_time = blog[2]
+        # 博文的作者
+        self.author = blog[3]
         # 博文的内容
         self.blog_info = blog[4]
         # 博文的转发量
@@ -31,3 +31,9 @@ class BlogEntity():
 
     def get_blog_info(self):
         return self.blog_info
+
+    def get_post_time(self):
+        return self.post_time
+
+    def get_hot_point(self):
+        return math.sqrt(self.comment ** 2 + self.blog_thumbup ** 2 + self.forward ** 2)

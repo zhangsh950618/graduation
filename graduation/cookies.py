@@ -32,6 +32,7 @@ class Cookies(object):
         # print(url)
 
         res = requests.get(url).text
+        print res
         # print(res)
         json_str = re.split(r'sinaSSOController.preloginCallBack\(|\)', res)[1]
         temp_dict = json.loads(json_str)
